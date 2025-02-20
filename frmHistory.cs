@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
@@ -8,22 +9,31 @@ namespace tssVer
     {
         public static string strTitle {get;set; }
         private static string strHistoryFile = $"{System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\history.xml";
+        public static frmHistory frm;
 
-        
 
         private frmHistory()
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// 起動時
+        /// </summary>
         public static void Init()
         {
-            frmHistory frm=new frmHistory();
+            frm=new frmHistory();
             frm.labelName.Text = strTitle;
             frm.dgv.DataSource = LoadHistory();
 
             frm.ShowDialog();
         }
 
+
+        /// <summary>
+        /// 履歴更新
+        /// </summary>
+        /// <returns></returns>
         private static bool WriteHistory()
         {
 
@@ -48,6 +58,15 @@ namespace tssVer
                 ds.ReadXml(strHistoryFile);
                 dt = ds.Tables["history"];
 
+                foreach(DataRow r in dt.Rows)
+                {
+                    if (r.RowState == DataRowState.Modified)
+                    {
+
+                    }
+                }
+
+
 
                 dt.WriteXml(strHistoryFile);
 
@@ -60,6 +79,11 @@ namespace tssVer
         }
 
 
+
+        /// <summary>
+        /// 履歴ロード
+        /// </summary>
+        /// <returns></returns>
         private static System.Data.DataTable LoadHistory()
         {
 
