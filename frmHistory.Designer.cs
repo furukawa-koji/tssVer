@@ -36,6 +36,7 @@
             // 
             // dgv
             // 
+            this.dgv.AllowUserToDeleteRows = false;
             this.dgv.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -46,6 +47,7 @@
             this.dgv.RowTemplate.Height = 21;
             this.dgv.Size = new System.Drawing.Size(1164, 604);
             this.dgv.TabIndex = 0;
+            this.dgv.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellEndEdit);
             // 
             // labelName
             // 
@@ -66,6 +68,7 @@
             this.buttonUpd.TabIndex = 2;
             this.buttonUpd.Text = "更新";
             this.buttonUpd.UseVisualStyleBackColor = true;
+            this.buttonUpd.Click += new System.EventHandler(this.buttonUpd_Click);
             // 
             // frmHistory
             // 

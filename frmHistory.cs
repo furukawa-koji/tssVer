@@ -10,6 +10,8 @@ namespace tssVer
         public static string strTitle {get;set; }
         private static string strHistoryFile = $"{System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\history.xml";
         public static frmHistory frm;
+        private static System.Data.DataSet ds = new System.Data.DataSet();
+        private static System.Data.DataTable dt = new System.Data.DataTable();
 
 
         private frmHistory()
@@ -24,9 +26,23 @@ namespace tssVer
         {
             frm=new frmHistory();
             frm.labelName.Text = strTitle;
+                        
             frm.dgv.DataSource = LoadHistory();
+            InitGrid();
 
             frm.ShowDialog();
+        }
+
+
+
+        private static void InitGrid()
+        {
+            frm.dgv.Columns["ver"].ReadOnly = true;
+            frm.dgv.Columns["user"].ReadOnly = true;
+
+            frm.dgv.Columns["ver"].Width = 150;
+            frm.dgv.Columns["user"].Width = 250;
+            frm.dgv.Columns["text"].Width = 500;
         }
 
 
@@ -35,38 +51,23 @@ namespace tssVer
         /// </summary>
         /// <returns></returns>
         private static bool WriteHistory()
-        {
-
-
-            System.Data.DataSet ds = new System.Data.DataSet();
-            System.Data.DataTable dt = new System.Data.DataTable();
-
+        {   
             try
             {
                 if (!System.IO.File.Exists(strHistoryFile))
-                {
+                {                    
                     System.IO.StreamWriter sw = new System.IO.StreamWriter(strHistoryFile);
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
                     sw.WriteLine("<history>");
-                    sw.WriteLine("	<ver></ver>");
-                    sw.WriteLine("	<user></user>");
+                    sw.WriteLine($"	<ver>{DateTime.Now.ToString("yyyy.MMdd-HHmm")}</ver>");
+                    sw.WriteLine($"	<user>{Environment.UserName}</user>");
                     sw.WriteLine("	<text></text>");
                     sw.WriteLine("</history>");
                     sw.Close();
+                    ds.ReadXml(strHistoryFile);
+                    dt = ds.Tables["history"];
+
                 };
-
-                ds.ReadXml(strHistoryFile);
-                dt = ds.Tables["history"];
-
-                foreach(DataRow r in dt.Rows)
-                {
-                    if (r.RowState == DataRowState.Modified)
-                    {
-
-                    }
-                }
-
-
 
                 dt.WriteXml(strHistoryFile);
 
@@ -86,27 +87,50 @@ namespace tssVer
         /// <returns></returns>
         private static System.Data.DataTable LoadHistory()
         {
-
-            System.Data.DataSet ds = new System.Data.DataSet();
-            System.Data.DataTable dt = new System.Data.DataTable();
-            
+            ds.Clear();
+            dt.Clear();
             try
             {
                 if (!System.IO.File.Exists(strHistoryFile)) return null;
 
                 ds.ReadXml(strHistoryFile);
                 dt = ds.Tables["history"];
-                if (dt.Rows.Count == 0) return null;
+                if (dt.Rows.Count == 0)
+                {
+                    dt.Columns.Add("ver");
+                    dt.Columns.Add("name");
+                    dt.Columns.Add("text");
+
+                    DataRow r = dt.NewRow();
+                    
+                    return dt;
+                }
 
                 
-
-
+                dt.AcceptChanges();
+                DataView dv = dt.AsDataView();
+                dv.Sort = "ver desc";
+                dt=dv.ToTable();
                 return dt;
             }
             catch(Exception ex)
-            { return null; 
+            { 
+                return null; 
             }
 
+        }
+
+        private void buttonUpd_Click(object sender, EventArgs e)
+        {
+
+            WriteHistory();
+        }
+
+        private void dgv_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+
+            frm.dgv.Rows[e.RowIndex].Cells["ver"].Value = $"{DateTime.Now.ToString("yy.MMdd.HHmm")}";
+            frm.dgv.Rows[e.RowIndex].Cells["user"].Value = $"{Environment.UserName}";
         }
     }
 }
