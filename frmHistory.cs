@@ -28,6 +28,7 @@ namespace tssVer
             frm.labelName.Text = strTitle;
                         
             frm.dgv.DataSource = LoadHistory();
+            if (frm.dgv.DataSource == null) return;
             InitGrid();
 
             frm.ShowDialog();
