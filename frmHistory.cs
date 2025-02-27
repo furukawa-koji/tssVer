@@ -76,6 +76,7 @@ namespace tssVer
             }
             catch(Exception ex)
             {
+                MessageBox.Show($"{System.Reflection.MethodBase.GetCurrentMethod().Name} {ex.Message}");
                 return false;
             }
         }
@@ -124,7 +125,8 @@ namespace tssVer
         private void buttonUpd_Click(object sender, EventArgs e)
         {
 
-            WriteHistory();
+            if(!WriteHistory())MessageBox.Show("更新失敗");
+            else MessageBox.Show("更新成功");
         }
 
         private void dgv_CellEndEdit(object sender, DataGridViewCellEventArgs e)
