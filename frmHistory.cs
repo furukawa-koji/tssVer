@@ -55,22 +55,37 @@ namespace tssVer
         {   
             try
             {
+                ds.DataSetName = "history";
+                ds.Tables.Clear();
+
                 if (!System.IO.File.Exists(strHistoryFile))
-                {                    
+                {
                     System.IO.StreamWriter sw = new System.IO.StreamWriter(strHistoryFile);
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+
                     sw.WriteLine("<history>");
-                    sw.WriteLine($"	<ver>{DateTime.Now.ToString("yyyy.MMdd-HHmm")}</ver>");
-                    sw.WriteLine($"	<user>{Environment.UserName}</user>");
-                    sw.WriteLine("	<text></text>");
+                    sw.WriteLine("  <version>");
+                    sw.WriteLine($"	    <ver>{DateTime.Now.ToString("yyyy.MMdd-HHmm")}</ver>");
+                    sw.WriteLine($"	    <user>{Environment.UserName}</user>");
+                    sw.WriteLine("	    <text></text>");
+                    sw.WriteLine("  <version>");
                     sw.WriteLine("</history>");
+
                     sw.Close();
                     ds.ReadXml(strHistoryFile);
                     dt = ds.Tables["history"];
 
-                };
+                }
 
-                dt.WriteXml(strHistoryFile);
+                //verの降順にしたいのでdataviewでソートしてから出力
+
+                DataView dv = dt.AsDataView();
+                dv.Sort = "ver desc";
+                dt = dv.ToTable();
+
+                ds.Tables.Add(dt);
+                ds.WriteXml(strHistoryFile);
+                
 
                 return true;
             }
@@ -85,7 +100,7 @@ namespace tssVer
 
         /// <summary>
         /// 履歴ロード
-        /// </summary>
+        /// </su    mmary>
         /// <returns></returns>
         private static System.Data.DataTable LoadHistory()
         {
@@ -96,7 +111,8 @@ namespace tssVer
                 if (!System.IO.File.Exists(strHistoryFile)) return null;
 
                 ds.ReadXml(strHistoryFile);
-                dt = ds.Tables["history"];
+                ds.DataSetName = "history";
+                dt = ds.Tables["version"];
                 if (dt.Rows.Count == 0)
                 {
                     dt.Columns.Add("ver");
