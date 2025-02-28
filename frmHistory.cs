@@ -68,7 +68,7 @@ namespace tssVer
                     sw.WriteLine($"	    <ver>{DateTime.Now.ToString("yyyy.MMdd-HHmm")}</ver>");
                     sw.WriteLine($"	    <user>{Environment.UserName}</user>");
                     sw.WriteLine("	    <text></text>");
-                    sw.WriteLine("  <version>");
+                    sw.WriteLine("  </version>");
                     sw.WriteLine("</history>");
 
                     sw.Close();

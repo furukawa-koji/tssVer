@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using System.Data;
 using System.Runtime.CompilerServices;
 
@@ -21,6 +20,25 @@ namespace tssVer
         {
             System.Data.DataSet ds = new System.Data.DataSet();
             System.Data.DataTable dt = new System.Data.DataTable();
+
+            if (!System.IO.File.Exists(strHistoryFile))
+            {
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(strHistoryFile,false,System.Text.Encoding.UTF8);
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+
+                sw.WriteLine("<history>");
+                sw.WriteLine("  <version>");
+                sw.WriteLine($"	    <ver>{DateTime.Now.ToString("yyyy.MMdd-HHmm")}</ver>");
+                sw.WriteLine($"	    <user>{Environment.UserName}</user>");
+                sw.WriteLine("	    <text></text>");
+                sw.WriteLine("  </version>");
+                sw.WriteLine("</history>");
+
+                sw.Close();
+            
+            }
+
+
             ds.ReadXml(strHistoryFile);
             dt = ds.Tables["version"];
             
@@ -30,20 +48,7 @@ namespace tssVer
             
             System.Diagnostics.Debug.Print(dv[0].ToString());
             tsslVer.Text = $"Ver.{dv[0]["ver"].ToString()}";
-            //tsslVer.Text = $"Ver.{dt.Year}.{dt.Month.ToString("00")}{dt.Day.ToString("00")}.{dt.Hour.ToString("00")}{dt.Minute.ToString("00")}";
-        }
 
-        //public void setVersion(System.Reflection.Assembly ass)
-        //{
-        //    ass = System.Reflection.Assembly.GetExecutingAssembly();
-        //    System.Version ver = ass.GetName().Version;
-        //    if (ver.Revision.ToString() == string.Empty) return;
-        //    int build = ver.Build % 9000;
-        //    tsslVer.Text = $"Ver.{ver.Major}.{ver.Minor}.{build}.{ver.Revision.ToString()}";
-        //}
-        public void setVersion(System.DateTime dt)
-        {
-            tsslVer.Text = $"Ver.{dt.Year}.{dt.Month.ToString("00")}{dt.Day.ToString("00")}.{dt.Hour.ToString("00")}{dt.Minute.ToString("00")}";
         }
 
         private void tsslVer_Click(object sender, EventArgs e)
